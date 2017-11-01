@@ -89,4 +89,27 @@ class MenuTest extends TestCase
               '*' => ['id', 'price', 'name', 'created_at', 'updated_at'],
           ]);
     }
+
+    public function testMenusAreShowedCorrectly()
+    {
+        Menu::truncate();
+
+        factory(Menu::class)->create([
+            'id' => 999,
+            'name' => 'Dragon Steak',
+            'price' => 10
+        ]);
+
+        $user = factory(User::class)->create();
+        $token = $user->generateToken();
+        $headers = ['Authorization' => "Bearer $token"];
+
+        $response = $this->json('GET', '/api/menus/999', [], $headers)
+          ->assertStatus(200)
+          ->assertJson([
+              'id' => 999,
+              'name' => 'Dragon Steak',
+              'price' => 10,
+          ]);
+    }
 }
